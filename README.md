@@ -3,6 +3,8 @@
 ## Structure
 The game is a turn-based combat game played between two teams of four characters each: **Player Team** and **Enemy Team**. Character's stats are randomly generated each time the game is loaded. Players can do full damage with basic attacks, or inflict injuries by targeting specific body parts.
 
+Characters are sorted by Speed at the start of combat, highest first. Within each turn, a character may take as many actions as their stamina allows. The player must manually click **End Turn** to pass to the next character.
+
 ---
 
 ## Stats
@@ -14,12 +16,6 @@ The game is a turn-based combat game played between two teams of four characters
 | Evasion | EVA | Increases chance to dodge incoming attacks | Dodge chance = min(40%, EVA × 2.5%) |
 | Speed | SPD | Determines turn order | Higher SPD acts first |
 | Resilience | RES | Increases max stamina and stamina recovery per turn | Max Stamina = 3 + floor(RES / 4); Recovery = 1 + floor(RES / 4) per turn |
-
----
-
-## Turn Order
-
-Characters are sorted by Speed at the start of combat, highest first. Within each turn, a character may take as many actions as their stamina allows. The player must manually click **End Turn** to pass to the next character.
 
 ---
 
