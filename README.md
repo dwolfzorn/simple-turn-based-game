@@ -1,36 +1,19 @@
 # Simple Turn Based Game — Game Overview
 
 ## Structure
-The game is a turn-based combat game played between two teams of four characters each: **Player Team** and **Enemy Team**. Combat plays out in rounds, with each character acting in turn order determined by their Speed stat.
-
----
-
-## Characters
-
-Each character is generated with the following:
-
-- **Name** — assigned by team and index (e.g. Player 1, Enemy 3)
-- **6 randomised stats** — each rolled between 1 and 10
-- **HP** — derived from Constitution
-- **Stamina** — derived from Resilience
-- **5 body parts** — each with HP proportional to the character's total HP
+The game is a turn-based combat game played between two teams of four characters each: **Player Team** and **Enemy Team**. Character's stats are randomly generated each time the game is loaded. Players can do full damage with basic attacks, or inflict injuries by targeting specific body parts.
 
 ---
 
 ## Stats
-| Stat | Abbr | Effect |
-|---|---|---|
-| Power | POW | Increases damage dealt by attacks |
-| Accuracy | ACC | Increases hit chance |
-| Constitution | CON | Increases total HP pool |
-| Evasion | EVA | Increases chance to dodge incoming attacks |
-| Speed | SPD | Determines turn order |
-| Resilience | RES | Increases max stamina and stamina recovery per turn |
-
-### Derived Values
-- **Max HP** = 10 + (CON − 1) × 2
-- **Max Stamina** = 3 + floor(RES / 4)
-- **Stamina recovery per turn** = 1 + floor(RES / 4)
+| Stat | Abbr | Effect | Derived Value |
+|---|---|---|---|
+| Power | POW | Increases damage dealt by attacks | Damage = base + floor(POW / 2) |
+| Accuracy | ACC | Increases hit chance | Hit chance = min(95%, 70% + ACC × 2.5%) |
+| Constitution | CON | Increases total HP pool | Max HP = 10 + (CON − 1) × 2 |
+| Evasion | EVA | Increases chance to dodge incoming attacks | Dodge chance = min(40%, EVA × 2.5%) |
+| Speed | SPD | Determines turn order | Higher SPD acts first |
+| Resilience | RES | Increases max stamina and stamina recovery per turn | Max Stamina = 3 + floor(RES / 4); Recovery = 1 + floor(RES / 4) per turn |
 
 ---
 
@@ -51,17 +34,6 @@ Characters are sorted by Speed at the start of combat, highest first. Within eac
 - Choose a target, then select a specific body part to attack.
 - Deals `5 + floor(POW / 2)` damage to the chosen body part.
 - Also deals `ceil(bodyPartDamage / 2)` damage to overall HP.
-
----
-
-## Hit & Dodge Resolution
-
-Every attack is resolved in two steps before damage is applied:
-
-1. **Hit roll** — chance to hit = min(95%, 70% + ACC × 2.5%). If failed, the attack **misses**.
-2. **Dodge roll** — chance to dodge = min(40%, EVA × 2.5%). If succeeded, the attack is **dodged**.
-
-Both attacker's ACC and defender's EVA use **effective stats** (i.e. after injury penalties are applied).
 
 ---
 
