@@ -67,7 +67,7 @@ State changes are announced in the combat log. The current state is shown on the
 When a body part enters a new state, it applies stat penalties to the character. These replace (not stack with) the previous state's penalties. Stats cannot be reduced below 1 by injuries.
 
 | Body Part | State | Injury Description | Penalties |
-|---|---|---|
+|---|---|---|---|
 | Head | Wounded | *(Dizziness)* | −1 ACC, −1 EVA, −1 SPD |
 | Head | Crippled | *(Concussion)* | −2 ACC, −3 EVA, −2 SPD, −1 POW, −2 RES |
 | Head | Destroyed | *(Incapacitated)* | −3 ACC, −5 EVA, −3 SPD, −2 POW, −4 RES |
