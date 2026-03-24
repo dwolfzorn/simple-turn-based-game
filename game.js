@@ -51,8 +51,13 @@ const INJURY_DESCRIPTIONS = {
 
 function generateStats() {
   const names = ['power', 'accuracy', 'constitution', 'evasion', 'speed', 'resilience'];
-  const stats = {};
-  names.forEach(n => stats[n] = Math.floor(Math.random() * 10) + 1);
+  let stats;
+  do {
+    stats = {};
+    names.forEach(n => stats[n] = Math.floor(Math.random() * 9) + 2);
+    const total = names.reduce((sum, n) => sum + stats[n], 0);
+    if (total >= 25 && total <= 30) break;
+  } while (true);
   return stats;
 }
 
