@@ -49,6 +49,13 @@ const INJURY_DESCRIPTIONS = {
   legs:  { Wounded: 'Limping', Crippled: 'Immobile', Destroyed: 'Severely Immobile' }
 };
 
+const CLASSES = [
+  { name: 'Duelist',   ability: 'Critical Strike', description: 'Basic attack. On hit, deals double damage.' },
+  { name: 'Physician', ability: 'Heal',             description: 'Restore HP to an ally equal to basic attack damage.' },
+  { name: 'Gladiator', ability: 'Brutal Target',    description: 'Targeted strike. On hit, deals double damage to the zone.' },
+  { name: 'Veteran',   ability: 'Leadership',       description: 'All units gain +1 to all stats permanently.' },
+];
+
 function generateStats() {
   const names = ['power', 'accuracy', 'constitution', 'evasion', 'speed', 'resilience'];
   let stats;
@@ -62,10 +69,12 @@ function generateStats() {
 }
 
 class Character {
-  constructor(name, team) {
+  constructor(name, team, characterClass) {
     this.name = name;
     this.team = team;
+    this.characterClass = characterClass;
     this.stats = generateStats();
+    this.statBonuses = { power: 0, accuracy: 0, constitution: 0, evasion: 0, speed: 0, resilience: 0 };
     this.speed = this.stats.speed;
     const hpBonus = (this.stats.constitution - 1) * 2;
     this.maxHP = 10 + hpBonus;
@@ -93,6 +102,9 @@ class Character {
           eff[stat] = Math.max(1, (eff[stat] || 0) + val);
         }
       }
+    }
+    for (const [stat, bonus] of Object.entries(this.statBonuses)) {
+      eff[stat] = (eff[stat] || 0) + bonus;
     }
     return eff;
   }
@@ -141,7 +153,8 @@ function calcDamage(attacker, base) {
 }
 
 function createTeam(name) {
-  return [1, 2, 3, 4].map(idx => new Character(`${name} ${idx}`, name));
+  const shuffled = [...CLASSES].sort(() => Math.random() - 0.5);
+  return [1, 2, 3, 4].map((idx, i) => new Character(`${name} ${idx}`, name, shuffled[i]));
 }
 
 let allCharacters = [...createTeam('Player'), ...createTeam('Enemy')];
@@ -151,6 +164,7 @@ let round = 1;
 let turnsTakenThisRound = 0;
 let gameState = 'selectAction';
 let attackType = null;
+let targetMode = 'enemy';
 let selectedTarget = null;
 let combatLog = [];
 
@@ -165,6 +179,7 @@ function addLog(message) {
 function initiateBasicAttack() {
   if (getCurrentCharacter().stamina < 1) return;
   attackType = 'basic';
+  targetMode = 'enemy';
   gameState = 'selectTarget';
   render();
 }
@@ -172,6 +187,21 @@ function initiateBasicAttack() {
 function initiateTargetedAttack() {
   if (getCurrentCharacter().stamina < 3) return;
   attackType = 'targeted';
+  targetMode = 'enemy';
+  gameState = 'selectTarget';
+  render();
+}
+
+function initiateClassAction() {
+  const current = getCurrentCharacter();
+  if (current.stamina < 3) return;
+  attackType = 'classAction';
+  const cls = current.characterClass;
+  if (cls.name === 'Veteran') {
+    performLeadership();
+    return;
+  }
+  targetMode = cls.name === 'Physician' ? 'ally' : 'enemy';
   gameState = 'selectTarget';
   render();
 }
@@ -180,6 +210,16 @@ function selectTarget(target) {
   selectedTarget = target;
   if (attackType === 'basic') {
     performBasicAttack(target);
+  } else if (attackType === 'classAction') {
+    const cls = getCurrentCharacter().characterClass;
+    if (cls.name === 'Duelist') {
+      performCriticalStrike(target);
+    } else if (cls.name === 'Physician') {
+      performHeal(target);
+    } else if (cls.name === 'Gladiator') {
+      gameState = 'selectBodyPart';
+      render();
+    }
   } else {
     gameState = 'selectBodyPart';
     render();
@@ -187,12 +227,17 @@ function selectTarget(target) {
 }
 
 function selectBodyPart(bodyPart) {
-  performTargetedAttack(selectedTarget, bodyPart);
+  if (attackType === 'classAction') {
+    performBrutalTarget(selectedTarget, bodyPart);
+  } else {
+    performTargetedAttack(selectedTarget, bodyPart);
+  }
 }
 
 function cancelAttack() {
   gameState = 'selectAction';
   attackType = null;
+  targetMode = 'enemy';
   selectedTarget = null;
   render();
 }
@@ -246,9 +291,86 @@ function performTargetedAttack(target, bodyPartKey) {
   afterAction();
 }
 
+function performCriticalStrike(target) {
+  const attacker = getCurrentCharacter();
+  attacker.stamina -= 3;
+
+  const outcome = resolveAttack(attacker, target);
+
+  if (outcome === 'miss') {
+    addLog(`${attacker.name}'s Critical Strike on ${target.name} missed!`);
+  } else if (outcome === 'dodge') {
+    addLog(`${target.name} dodged ${attacker.name}'s Critical Strike!`);
+  } else {
+    const damage = calcDamage(attacker, 5) * 2;
+    target.takeDamage(damage, 'whole');
+    let logMessage = `<span class="log-class">${attacker.name} lands a Critical Strike on ${target.name} for ${damage} damage!</span>`;
+    if (target.isDead) logMessage += ` <span class="log-kill">[DEFEATED]</span>`;
+    addLog(logMessage);
+  }
+
+  afterAction();
+}
+
+function performHeal(target) {
+  const attacker = getCurrentCharacter();
+  attacker.stamina -= 3;
+
+  const healAmount = calcDamage(attacker, 5);
+  const eff = target.getEffectiveStats();
+  const effMaxHP = Math.max(1, 10 + (eff.constitution - 1) * 2);
+  target.hp = Math.min(effMaxHP, target.hp + healAmount);
+  addLog(`<span class="log-class">${attacker.name} heals ${target.name} for ${healAmount} HP!</span>`);
+
+  afterAction();
+}
+
+function performBrutalTarget(target, bodyPartKey) {
+  const attacker = getCurrentCharacter();
+  attacker.stamina -= 3;
+
+  const outcome = resolveAttack(attacker, target);
+  const partName = BODY_PART_NAMES[bodyPartKey];
+
+  if (outcome === 'miss') {
+    addLog(`${attacker.name}'s Brutal Target on ${target.name}'s ${partName} missed!`);
+  } else if (outcome === 'dodge') {
+    addLog(`${target.name} dodged ${attacker.name}'s Brutal Target!`);
+  } else {
+    const bodyPartDamage = calcDamage(attacker, 5) * 2;
+    const overallDamage = Math.ceil(calcDamage(attacker, 5) / 2);
+    const result = target.takeDamage(bodyPartDamage, bodyPartKey);
+    target.hp = Math.max(0, target.hp - overallDamage);
+    if (target.hp === 0) target.isDead = true;
+    let logMessage = `<span class="log-class">${attacker.name} uses Brutal Target on ${target.name}'s ${partName} for ${bodyPartDamage} dmg (${overallDamage} overall)!</span>`;
+    if (target.isDead) logMessage += ` <span class="log-kill">[DEFEATED]</span>`;
+    addLog(logMessage);
+    for (const change of result.stateChanges) {
+      addLog(`<span class="log-injury">${target.name}'s ${BODY_PART_NAMES[change.bodyPartKey]} is now ${change.newState}!</span>`);
+    }
+  }
+
+  afterAction();
+}
+
+function performLeadership() {
+  const attacker = getCurrentCharacter();
+  attacker.stamina -= 3;
+
+  for (const c of allCharacters.filter(c => c.team === attacker.team)) {
+    for (const stat of Object.keys(c.statBonuses)) {
+      c.statBonuses[stat] += 1;
+    }
+  }
+  addLog(`<span class="log-class">${attacker.name} uses Leadership! Friendly units gain +1 to all stats!</span>`);
+
+  afterAction();
+}
+
 function afterAction() {
   gameState = 'selectAction';
   attackType = null;
+  targetMode = 'enemy';
   selectedTarget = null;
 
   for (const c of allCharacters) {
@@ -318,7 +440,9 @@ function renderPlayerCard(character) {
   const isDead = character.isDead ? 'dead' : '';
   const teamClass = character.team === 'Player' ? 'player-team' : 'enemy-team';
   const current = getCurrentCharacter();
-  const isSelectable = gameState === 'selectTarget' && character.team !== current.team && !character.isDead ? 'selectable' : '';
+  const isEnemySelectable = gameState === 'selectTarget' && targetMode === 'enemy' && character.team !== current.team && !character.isDead;
+  const isAllySelectable = gameState === 'selectTarget' && targetMode === 'ally' && character.team === current.team && !character.isDead;
+  const isSelectable = (isEnemySelectable || isAllySelectable) ? 'selectable' : '';
 
   const bodyPartsHTML = `<div class="body-parts-section"><div class="body-parts-title">Body Parts</div><div class="body-parts-grid">${Object.entries(character.bodyParts).map(([key, data]) => {
     const state = getBodyPartState(data.hp, data.maxHp);
@@ -336,7 +460,8 @@ function renderPlayerCard(character) {
   const hpBarHTML = `<div class="hp-stamina-wrapper"><div class="hp-bar-container"><div class="hp-bar-fill" style="width:${hpPct}%"></div><div class="hp-bar-text">${character.hp}/${effMaxHP}</div></div><div class="stamina-pips">${pipsHTML}</div></div>`;
   const statVal = (key, label) => {
     const reduced = eff[key] < s[key];
-    return `<div class="stat-abbr-item">${label} <b${reduced ? ' style="color:#CC0000"' : ''}>${eff[key]}</b></div>`;
+    const boosted = eff[key] > s[key];
+    return `<div class="stat-abbr-item">${label} <b${reduced ? ' style="color:#CC0000"' : boosted ? ' style="color:#4CAF50"' : ''}>${eff[key]}</b></div>`;
   };
   const abbrHTML = `<div class="stat-abbr-grid">${statVal('power','POW')}${statVal('accuracy','ACC')}${statVal('constitution','CON')}${statVal('evasion','EVA')}${statVal('speed','SPD')}${statVal('resilience','RES')}</div>`;
 
@@ -344,7 +469,8 @@ function renderPlayerCard(character) {
   const injuryHTML = injuries.length > 0
     ? `<div class="card-injuries">${injuries.join(' · ')}</div>`
     : '';
-  return `<div class="player-card ${isActiveTurn} ${isDead} ${teamClass} ${isSelectable}" ${isSelectable ? `onclick="selectTarget(window.allCharacters.find(c => c.name === '${character.name}'))"` : ''}><div class="player-name">${character.name}</div>${injuryHTML}${hpBarHTML}<div class="player-stats">${abbrHTML}</div>${character.isDead ? '<div class="dead-label">DEAD</div>' : bodyPartsHTML}</div>`;
+
+  return `<div class="player-card ${isActiveTurn} ${isDead} ${teamClass} ${isSelectable}" ${isSelectable ? `onclick="selectTarget(window.allCharacters.find(c => c.name === '${character.name}'))"` : ''}><div class="player-name">${character.name}</div><div class="player-class">${character.characterClass.name}</div>${injuryHTML}${hpBarHTML}<div class="player-stats">${abbrHTML}</div>${character.isDead ? '<div class="dead-label">DEAD</div>' : bodyPartsHTML}</div>`;
 }
 
 function renderTurnOrder() {
@@ -372,13 +498,15 @@ function renderCurrentTurnInfo() {
   if (gameState === 'selectAction') {
     const canBasic = current.stamina >= 1;
     const canTargeted = current.stamina >= 3;
+    const canClass = current.stamina >= 3;
     const basicDmg = calcDamage(current, 5);
     const targetedPartDmg = calcDamage(current, 5);
     const targetedOverallDmg = Math.ceil(targetedPartDmg / 2);
-    return `<div class="current-player-name">${current.name}'s Turn</div><div class="attack-options"><div class="attack-card ${canBasic ? '' : 'disabled'}" onclick="initiateBasicAttack()"><div class="attack-title">Basic Attack</div><div class="attack-detail">1 Stamina</div><div class="attack-detail">${basicDmg} dmg</div></div><div class="attack-card ${canTargeted ? '' : 'disabled'}" onclick="initiateTargetedAttack()"><div class="attack-title">Targeted Attack</div><div class="attack-detail">3 Stamina</div><div class="attack-detail">${targetedPartDmg} dmg to part</div><div class="attack-detail">${targetedOverallDmg} dmg overall</div></div><div class="attack-card disabled"><div class="attack-title">Class Action</div><div class="attack-detail">—</div></div><div class="end-turn-card" onclick="endTurn()">End Turn</div></div>`;
-h  } else if (gameState === 'selectTarget') {
-    const opposingTeam = current.team === 'Player' ? 'Enemy' : 'Player';
-    return `<div class="current-player-name">Select Target</div><div class="action-prompt">Click on a ${opposingTeam} to attack them</div><div class="button-group"><button onclick="cancelAttack()">Cancel</button></div>`;
+    const cls = current.characterClass;
+    return `<div class="current-player-name">${current.name}'s Turn</div><div class="attack-options"><div class="attack-card ${canBasic ? '' : 'disabled'}" onclick="initiateBasicAttack()"><div class="attack-title">Basic Attack</div><div class="attack-detail">1 Stamina</div><div class="attack-detail">${basicDmg} dmg</div></div><div class="attack-card ${canTargeted ? '' : 'disabled'}" onclick="initiateTargetedAttack()"><div class="attack-title">Targeted Attack</div><div class="attack-detail">3 Stamina</div><div class="attack-detail">${targetedPartDmg} dmg to part</div><div class="attack-detail">${targetedOverallDmg} dmg overall</div></div><div class="attack-card ${canClass ? '' : 'disabled'}" onclick="initiateClassAction()"><div class="attack-title">${cls.ability}</div><div class="attack-detail">3 Stamina</div><div class="attack-detail">${cls.description}</div></div><div class="end-turn-card" onclick="endTurn()">End Turn</div></div>`;
+  } else if (gameState === 'selectTarget') {
+    const prompt = targetMode === 'ally' ? 'Click on an ally to target them' : `Click on an Enemy to attack them`;
+    return `<div class="current-player-name">Select Target</div><div class="action-prompt">${prompt}</div><div class="button-group"><button onclick="cancelAttack()">Cancel</button></div>`;
   } else if (gameState === 'selectBodyPart') {
     return `<div class="current-player-name">Select Body Part</div><div class="action-prompt">Choose which body part to attack</div><div class="body-part-selection"><button class="body-part-button" onclick="selectBodyPart('head')">Head</button><button class="body-part-button" onclick="selectBodyPart('torso')">Torso</button><button class="body-part-button" onclick="selectBodyPart('arm1')">Arm 1</button><button class="body-part-button" onclick="selectBodyPart('arm2')">Arm 2</button><button class="body-part-button" onclick="selectBodyPart('legs')">Legs</button></div><div class="button-group" style="margin-top: 1rem;"><button onclick="cancelAttack()">Cancel</button></div>`;
   }

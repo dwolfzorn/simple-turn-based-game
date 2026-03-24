@@ -155,9 +155,15 @@ body { margin: 0; padding: 0; }
 .player-name {
   font-size: 15px;
   font-weight: 500;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.1rem 0;
   font-family: Arial, sans-serif;
   display: block;
+}
+.player-class {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  font-family: Arial, sans-serif;
+  margin: 0 0 0.5rem 0;
 }
 .card-injuries {
   font-size: 10px;
@@ -529,4 +535,8 @@ button:disabled {
 .log-injury {
   color: #FF9800;
   font-weight: 500;
+}
+.log-class {
+  color: #7B68EE;
+  font-weight: 600;
 }
