@@ -333,7 +333,7 @@ body { margin: 0; padding: 0; }
 }
 .current-turn-info {
   text-align: center;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 0.75rem;
   background: var(--color-background-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid #666666;
@@ -361,9 +361,34 @@ body { margin: 0; padding: 0; }
 }
 .attack-options {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr) 0.4fr;
   gap: 12px;
   margin-bottom: 1.5rem;
+  align-items: stretch;
+}
+.end-turn-card {
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #666666;
+  border-radius: var(--border-radius-lg);
+  background: #d0d0d0;
+  color: #222;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  writing-mode: horizontal-tb;
+}
+.end-turn-card:hover {
+  border-color: #888;
+  background: #2a2a2a;
+}
+.end-turn-card:active {
+  transform: scale(0.98);
 }
 .attack-card {
   padding: 1rem;
