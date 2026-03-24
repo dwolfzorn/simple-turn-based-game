@@ -1,5 +1,8 @@
 # Simple Turn Based Game — Overview
 
+## Play here
+https://dwolfzorn.github.io/simple-turn-based-game/
+
 ## Structure
 
 The game is a turn-based combat game played between two teams of four characters each: **Player Team** and **Enemy Team**. Combat plays out in rounds. Within each turn, a character may take as many actions as their stamina allows. The player must manually click **End Turn** to pass to the next character.
