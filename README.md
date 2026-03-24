@@ -1,9 +1,8 @@
-# Simple Turn Based Game — Game Overview
+# Simple Turn Based Game — Overview
 
 ## Structure
-The game is a turn-based combat game played between two teams of four characters each: **Player Team** and **Enemy Team**. Character's stats are randomly generated each time the game is loaded. Players can do full damage with basic attacks, or inflict injuries by targeting specific body parts.
 
-Characters are sorted by Speed at the start of combat, highest first. Within each turn, a character may take as many actions as their stamina allows. The player must manually click **End Turn** to pass to the next character.
+The game is a turn-based combat game played between two teams of four characters each: **Player Team** and **Enemy Team**. Combat plays out in rounds. Within each turn, a character may take as many actions as their stamina allows. The player must manually click **End Turn** to pass to the next character.
 
 ---
 
@@ -64,37 +63,24 @@ State changes are announced in the combat log. The current state is shown on the
 
 When a body part enters a new state, it applies stat penalties to the character. These replace (not stack with) the previous state's penalties. Stats cannot be reduced below 1 by injuries.
 
-### Head
-| State | Penalties |
-|---|---|
-| Wounded *(Dizziness)* | −1 ACC, −1 EVA, −1 SPD |
-| Crippled *(Concussion)* | −2 ACC, −3 EVA, −2 SPD, −1 POW, −2 RES |
-| Destroyed *(Incapacitated)* | −3 ACC, −5 EVA, −3 SPD, −2 POW, −4 RES |
+| Body Part | State | Injury Description | Penalties |
+| Head |---|---|
+| Head | Wounded | *(Dizziness)* | −1 ACC, −1 EVA, −1 SPD |
+| Head | Crippled | *(Concussion)* | −2 ACC, −3 EVA, −2 SPD, −1 POW, −2 RES |
+| Head | Destroyed | *(Incapacitated)* | −3 ACC, −5 EVA, −3 SPD, −2 POW, −4 RES |
+| Torso | Wounded | *(Contused)* | −1 RES, −1 POW, −2 CON |
+| Torso | Crippled | *(Internal Damage)* | −2 RES, −2 POW, −3 CON |
+| Torso | Destroyed | *(Critical Blood Loss)* | −3 RES, −3 POW, −4 CON |
+| Arms | Wounded | *(Weakened Grip)* | −1 POW, −1 ACC, −1 SPD |
+| Arms | Crippled | *(Broken)* | −2 POW, −2 ACC, −1 SPD |
+| Arms | Destroyed | *(Removed Arm)* | −3 POW, −3 ACC, −1 SPD |
+| Legs | Wounded | *(Limping)* | −2 SPD, −2 EVA, −1 POW |
+| Legs | Crippled | *(Immobile)* | −4 SPD, −4 EVA, −2 POW |
+| Legs | Destroyed | *(Severely Immobile)* | −5 SPD, −5 EVA |
 
-### Torso
-| State | Penalties |
-|---|---|
-| Wounded *(Contused)* | −1 RES, −1 POW, −2 CON |
-| Crippled *(Internal Damage)* | −2 RES, −2 POW, −3 CON |
-| Destroyed *(Critical Blood Loss)* | −3 RES, −3 POW, −4 CON |
+Injury descriptions are displayed on the character card below their name. Stat values shown on the card reflect current effective values, with any reduced stats highlighted in red.
 
-### Arms (Arm 1 & Arm 2)
-| State | Penalties |
-|---|---|
-| Wounded *(Weakened Grip)* | −1 POW, −1 ACC, −1 SPD |
-| Crippled *(Broken)* | −2 POW, −2 ACC, −1 SPD |
-| Destroyed *(Removed Arm)* | −3 POW, −3 ACC, −1 SPD |
-
-### Legs
-| State | Penalties |
-|---|---|
-| Wounded *(Limping)* | −2 SPD, −2 EVA, −1 POW |
-| Crippled *(Immobile)* | −4 SPD, −4 EVA, −2 POW |
-| Destroyed *(Severely Immobile)* | −5 SPD, −5 EVA |
-
-Injury descriptions (e.g. *Dizziness*, *Limping*) are displayed on the character card below their name. Stat values shown on the card reflect current effective values, with any reduced stats highlighted in red.
-
-CON penalties also reduce effective max HP. If a character's current HP exceeds their effective max HP after an attack, their HP is clamped down to the new maximum.
+CON penalties reduce effective max HP. If a character's current HP exceeds their effective max HP after an attack, their HP is decreased to the new maximum.
 
 ---
 
