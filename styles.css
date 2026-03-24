@@ -391,7 +391,7 @@ body { margin: 0; padding: 0; }
 }
 .end-turn-card:hover {
   border-color: #888;
-  background: #2a2a2a;
+  background: #b0b0b0;
 }
 .end-turn-card:active {
   transform: scale(0.98);
@@ -410,8 +410,8 @@ body { margin: 0; padding: 0; }
   text-align: center;
 }
 .attack-card:hover {
-  border-color: #1976D2;
-  background: #E8F4FF;
+  border-color: #888;
+  background: #d0d0d0;
 }
 .attack-card.disabled {
   opacity: 0.4;
