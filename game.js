@@ -339,9 +339,7 @@ function renderPlayerCard(character) {
   const injuryHTML = injuries.length > 0
     ? `<div class="card-injuries">${injuries.join(' · ')}</div>`
     : '';
-  const statsIconHTML = `<div class="stats-icon-wrapper"><div class="stats-icon">i</div><div class="stats-tooltip"><div><b>Power (POW):</b> Increases damage dealt by attacks and skills</div><div><b>Accuracy (ACC):</b> Increases hit chance for all attacks and skills</div><div><b>Constitution (CON):</b> Increases total HP</div><div><b>Evasion (EVA):</b> Increases chance to dodge attacks</div><div><b>Speed (SPD):</b> Determines turn order</div><div><b>Resilience (RES):</b> Increases stamina points and stamina regeneration</div></div></div>`;
-
-  return `<div class="player-card ${isActiveTurn} ${isDead} ${teamClass} ${isSelectable}" ${isSelectable ? `onclick="selectTarget(window.allCharacters.find(c => c.name === '${character.name}'))"` : ''}><div class="card-header"><div class="player-name-block"><div class="player-name">${character.name}</div>${injuryHTML}</div><div class="card-right">${abbrHTML}${statsIconHTML}${hpBarHTML}</div></div>${character.isDead ? '<div class="dead-label">DEAD</div>' : bodyPartsHTML}</div>`;
+  return `<div class="player-card ${isActiveTurn} ${isDead} ${teamClass} ${isSelectable}" ${isSelectable ? `onclick="selectTarget(window.allCharacters.find(c => c.name === '${character.name}'))"` : ''}><div class="player-name">${character.name}</div>${injuryHTML}${hpBarHTML}<div class="player-stats">${abbrHTML}</div>${character.isDead ? '<div class="dead-label">DEAD</div>' : bodyPartsHTML}</div>`;
 }
 
 function renderTurnOrder() {
@@ -352,7 +350,10 @@ function renderTurnOrder() {
     if (idx === currentTurnIndex && !c.isDead) classes += ' current';
     if (idx < currentTurnIndex) classes += ' done';
     if (c.isDead) classes += ' dead';
-    return `<div class="${classes}"><span>${c.name}</span></div>`;
+    const teamPrefix = c.team === 'Player' ? 'P' : 'E';
+    const number = c.name.match(/\d+/)?.[0] || '';
+    const shortLabel = `${teamPrefix}${number}`;
+    return `<div class="${classes}"><span>${shortLabel}</span></div>`;
   }).join('');
 }
 
