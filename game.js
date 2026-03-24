@@ -165,7 +165,7 @@ function initiateBasicAttack() {
 }
 
 function initiateTargetedAttack() {
-  if (getCurrentCharacter().stamina < 2) return;
+  if (getCurrentCharacter().stamina < 4) return;
   attackType = 'targeted';
   gameState = 'selectTarget';
   render();
@@ -215,7 +215,7 @@ function performBasicAttack(target) {
 
 function performTargetedAttack(target, bodyPartKey) {
   const attacker = getCurrentCharacter();
-  attacker.stamina -= 2;
+  attacker.stamina -= 4;
 
   const outcome = resolveAttack(attacker, target);
   const partName = BODY_PART_NAMES[bodyPartKey];
@@ -317,7 +317,8 @@ function renderPlayerCard(character) {
 
   const bodyPartsHTML = `<div class="body-parts-section"><div class="body-parts-title">Body Parts</div><div class="body-parts-grid">${Object.entries(character.bodyParts).map(([key, data]) => {
     const state = getBodyPartState(data.hp, data.maxHp);
-    return `<div class="body-part-row"><div class="body-part-name">${BODY_PART_NAMES[key]}</div><div class="body-part-hp">${data.hp}/${data.maxHp}</div><div class="body-part-status">${state || ''}</div></div>`;
+    const hpPct = Math.max(0, (data.hp / data.maxHp) * 100).toFixed(1);
+    return `<div class="body-part-row"><div class="body-part-name">${BODY_PART_NAMES[key]}</div><div class="body-part-hp-bar"><div class="body-part-hp-fill" style="width:${hpPct}%"></div><div class="body-part-hp-text">${data.hp}/${data.maxHp}</div></div><div class="body-part-status">${state || ''}</div></div>`;
   }).join('')}</div></div>`;
 
   const s = character.stats;
@@ -364,11 +365,11 @@ function renderCurrentTurnInfo() {
 
   if (gameState === 'selectAction') {
     const canBasic = current.stamina >= 1;
-    const canTargeted = current.stamina >= 2;
+    const canTargeted = current.stamina >= 4;
     const basicDmg = calcDamage(current, 5);
     const targetedPartDmg = calcDamage(current, 5);
     const targetedOverallDmg = Math.ceil(targetedPartDmg / 2);
-    return `<div class="current-player-name">${current.name}'s Turn</div><div class="current-player-turn">${current.team} Team • ${current.stamina}/${current.maxStamina} Stamina</div><div class="attack-options"><div class="attack-card ${canBasic ? '' : 'disabled'}" onclick="initiateBasicAttack()"><div class="attack-title">Basic Attack</div><div class="attack-detail">1 Stamina</div><div class="attack-detail">${basicDmg} dmg</div></div><div class="attack-card ${canTargeted ? '' : 'disabled'}" onclick="initiateTargetedAttack()"><div class="attack-title">Targeted Attack</div><div class="attack-detail">2 Stamina</div><div class="attack-detail">${targetedPartDmg} dmg to part</div><div class="attack-detail">${targetedOverallDmg} dmg overall</div></div></div><div class="button-group" style="margin-top:1rem;"><button onclick="endTurn()">End Turn</button></div>`;
+    return `<div class="current-player-name">${current.name}'s Turn</div><div class="current-player-turn">${current.team} Team • ${current.stamina}/${current.maxStamina} Stamina</div><div class="attack-options"><div class="attack-card ${canBasic ? '' : 'disabled'}" onclick="initiateBasicAttack()"><div class="attack-title">Basic Attack</div><div class="attack-detail">1 Stamina</div><div class="attack-detail">${basicDmg} dmg</div></div><div class="attack-card ${canTargeted ? '' : 'disabled'}" onclick="initiateTargetedAttack()"><div class="attack-title">Targeted Attack</div><div class="attack-detail">4 Stamina</div><div class="attack-detail">${targetedPartDmg} dmg to part</div><div class="attack-detail">${targetedOverallDmg} dmg overall</div></div></div><div class="button-group" style="margin-top:1rem;"><button onclick="endTurn()">End Turn</button></div>`;
   } else if (gameState === 'selectTarget') {
     const opposingTeam = current.team === 'Player' ? 'Enemy' : 'Player';
     return `<div class="current-player-name">Select Target</div><div class="action-prompt">Click on a ${opposingTeam} to attack them</div><div class="button-group"><button onclick="cancelAttack()">Cancel</button></div>`;
