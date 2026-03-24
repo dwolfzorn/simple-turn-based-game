@@ -165,7 +165,7 @@ function initiateBasicAttack() {
 }
 
 function initiateTargetedAttack() {
-  if (getCurrentCharacter().stamina < 4) return;
+  if (getCurrentCharacter().stamina < 3) return;
   attackType = 'targeted';
   gameState = 'selectTarget';
   render();
@@ -215,7 +215,7 @@ function performBasicAttack(target) {
 
 function performTargetedAttack(target, bodyPartKey) {
   const attacker = getCurrentCharacter();
-  attacker.stamina -= 4;
+  attacker.stamina -= 3;
 
   const outcome = resolveAttack(attacker, target);
   const partName = BODY_PART_NAMES[bodyPartKey];
@@ -366,11 +366,11 @@ function renderCurrentTurnInfo() {
 
   if (gameState === 'selectAction') {
     const canBasic = current.stamina >= 1;
-    const canTargeted = current.stamina >= 4;
+    const canTargeted = current.stamina >= 3;
     const basicDmg = calcDamage(current, 5);
     const targetedPartDmg = calcDamage(current, 5);
     const targetedOverallDmg = Math.ceil(targetedPartDmg / 2);
-    return `<div class="current-player-name">${current.name}'s Turn</div><div class="current-player-turn">${current.team} Team • ${current.stamina}/${current.maxStamina} Stamina</div><div class="attack-options"><div class="attack-card ${canBasic ? '' : 'disabled'}" onclick="initiateBasicAttack()"><div class="attack-title">Basic Attack</div><div class="attack-detail">1 Stamina</div><div class="attack-detail">${basicDmg} dmg</div></div><div class="attack-card ${canTargeted ? '' : 'disabled'}" onclick="initiateTargetedAttack()"><div class="attack-title">Targeted Attack</div><div class="attack-detail">4 Stamina</div><div class="attack-detail">${targetedPartDmg} dmg to part</div><div class="attack-detail">${targetedOverallDmg} dmg overall</div></div></div><div class="button-group" style="margin-top:1rem;"><button onclick="endTurn()">End Turn</button></div>`;
+    return `<div class="current-player-name">${current.name}'s Turn</div><div class="current-player-turn">${current.team} Team • ${current.stamina}/${current.maxStamina} Stamina</div><div class="attack-options"><div class="attack-card ${canBasic ? '' : 'disabled'}" onclick="initiateBasicAttack()"><div class="attack-title">Basic Attack</div><div class="attack-detail">1 Stamina</div><div class="attack-detail">${basicDmg} dmg</div></div><div class="attack-card ${canTargeted ? '' : 'disabled'}" onclick="initiateTargetedAttack()"><div class="attack-title">Targeted Attack</div><div class="attack-detail">3 Stamina</div><div class="attack-detail">${targetedPartDmg} dmg to part</div><div class="attack-detail">${targetedOverallDmg} dmg overall</div></div></div><div class="button-group" style="margin-top:1rem;"><button onclick="endTurn()">End Turn</button></div>`;
   } else if (gameState === 'selectTarget') {
     const opposingTeam = current.team === 'Player' ? 'Enemy' : 'Player';
     return `<div class="current-player-name">Select Target</div><div class="action-prompt">Click on a ${opposingTeam} to attack them</div><div class="button-group"><button onclick="cancelAttack()">Cancel</button></div>`;
