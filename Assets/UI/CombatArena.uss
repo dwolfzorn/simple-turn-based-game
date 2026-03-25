@@ -1,0 +1,214 @@
+/* ── Root ─────────────────────────────────────────────────────── */
+.root {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(22, 24, 36);
+    flex-direction: column;
+    font-size: 13px;
+    color: rgb(220, 220, 240);
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+.header {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: rgb(14, 16, 26);
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(80, 90, 140);
+    flex-shrink: 0;
+}
+
+.title {
+    font-size: 22px;
+    color: rgb(190, 200, 255);
+    -unity-font-style: bold;
+    flex-grow: 1;
+}
+
+.round-label {
+    font-size: 16px;
+    color: rgb(255, 210, 80);
+    margin-right: 16px;
+}
+
+.turn-order {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.turn-indicator {
+    width: 32px;
+    height: 22px;
+    margin: 2px;
+    border-radius: 4px;
+    border-width: 2px;
+    border-color: rgb(70, 75, 110);
+    background-color: rgb(40, 44, 64);
+    -unity-text-align: middle-center;
+    font-size: 11px;
+}
+
+.ti-player { color: rgb(130, 190, 255); }
+.ti-enemy  { color: rgb(255, 130, 130); }
+
+.ti-current {
+    border-color: rgb(255, 215, 0);
+    border-width: 3px;
+    background-color: rgb(70, 66, 20);
+}
+
+.ti-acted { opacity: 0.45; }
+.ti-dead  { opacity: 0.25; background-color: rgb(60, 25, 25); }
+
+/* ── Teams ───────────────────────────────────────────────────── */
+.teams-row {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 6px;
+    overflow: hidden;
+}
+
+.team-section {
+    flex: 1;
+    flex-direction: column;
+    padding: 0 4px;
+}
+
+.team-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.team-title-player { background-color: rgb(24, 50, 100); color: rgb(130, 190, 255); }
+.team-title-enemy  { background-color: rgb(100, 24, 24);  color: rgb(255, 130, 130); }
+
+.cards-container { flex-direction: row; flex-wrap: wrap; }
+
+/* ── Character card ──────────────────────────────────────────── */
+.char-card {
+    width: 47%;
+    margin: 2px;
+    padding: 6px;
+    border-radius: 4px;
+    border-width: 2px;
+    border-color: rgb(60, 65, 100);
+}
+
+.card-player     { background-color: rgb(20, 38, 75); }
+.card-enemy      { background-color: rgb(75, 20, 20); }
+.card-dead       { opacity: 0.30; border-color: rgb(120, 30, 30); }
+.card-active     { border-color: rgb(255, 215, 0); border-width: 3px; }
+.card-targetable { border-color: rgb(50, 200, 80); border-width: 2px; cursor: link; }
+
+.card-name       { font-size: 12px; -unity-font-style: bold; color: rgb(215, 215, 255); }
+.card-class      { font-size: 11px; color: rgb(170, 170, 210); margin-bottom: 2px; }
+.card-injuries   { font-size: 10px; color: rgb(255, 110, 70); -unity-font-style: italic; margin-bottom: 2px; }
+.card-dead-label { font-size: 14px; color: rgb(220, 50, 50); -unity-font-style: bold; -unity-text-align: middle-center; }
+.card-hp-label   { font-size: 10px; color: rgb(190, 170, 170); margin-bottom: 2px; }
+
+.hp-bar-bg {
+    height: 9px;
+    background-color: rgb(50, 15, 15);
+    border-radius: 3px;
+    margin-bottom: 2px;
+    overflow: hidden;
+}
+.hp-bar-fill { height: 100%; background-color: rgb(200, 55, 55); border-radius: 3px; }
+
+.stamina-row  { flex-direction: row; margin-bottom: 3px; }
+.stamina-pip  { width: 10px; height: 10px; border-radius: 2px; margin: 1px; background-color: rgb(50, 160, 60); }
+.pip-empty    { background-color: rgb(40, 40, 50); }
+
+.stats-grid    { flex-direction: row; flex-wrap: wrap; margin-bottom: 3px; }
+.stat-item     { width: 33%; font-size: 10px; color: rgb(170, 170, 195); }
+.stat-buffed   { color: rgb(70, 210, 80); }
+.stat-penalized{ color: rgb(210, 70, 70); }
+
+.bp-section  { flex-direction: column; }
+.bp-row      { flex-direction: row; align-items: center; margin-bottom: 1px; }
+.bp-label    { width: 38px; font-size: 10px; color: rgb(150, 150, 175); }
+.bp-targetable { cursor: link; background-color: rgba(50, 200, 80, 0.15); border-radius: 2px; }
+
+.bp-bar-bg    { flex-grow: 1; height: 5px; background-color: rgb(40, 20, 20); border-radius: 2px; overflow: hidden; }
+.bp-bar-fill  { height: 100%; border-radius: 2px; }
+.bp-healthy   { background-color: rgb(70, 180, 75); }
+.bp-wounded   { background-color: rgb(220, 175, 10); }
+.bp-crippled  { background-color: rgb(200, 80, 10); }
+.bp-destroyed { background-color: rgb(100, 20, 20); }
+
+/* ── Action panel ────────────────────────────────────────────── */
+.action-panel {
+    padding: 7px 12px;
+    background-color: rgb(16, 20, 32);
+    border-top-width: 2px;
+    border-top-color: rgb(70, 80, 120);
+    flex-shrink: 0;
+}
+
+.turn-label    { font-size: 13px; color: rgb(190, 200, 255); margin-bottom: 5px; }
+.action-buttons{ flex-direction: row; margin-bottom: 5px; }
+
+.action-btn {
+    flex: 1;
+    margin: 2px;
+    padding: 6px 4px;
+    background-color: rgb(45, 55, 95);
+    border-color: rgb(75, 95, 155);
+    border-radius: 4px;
+    color: rgb(200, 210, 255);
+    font-size: 11px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+.action-btn:hover    { background-color: rgb(65, 80, 135); }
+.action-btn:disabled { opacity: 0.38; background-color: rgb(30, 30, 45); }
+.btn-endturn  { background-color: rgb(44, 44, 56); border-color: rgb(75, 75, 95); flex: 0; width: 80px; }
+.selection-prompt { font-size: 12px; color: rgb(255, 210, 70); }
+
+/* ── Log ─────────────────────────────────────────────────────── */
+.log-section {
+    padding: 5px 12px;
+    background-color: rgb(12, 13, 22);
+    border-top-width: 1px;
+    border-top-color: rgb(55, 60, 90);
+    flex-shrink: 0;
+    max-height: 90px;
+}
+
+.log-title   { font-size: 11px; color: rgb(130, 130, 165); margin-bottom: 2px; }
+.log-entry   { font-size: 11px; color: rgb(200, 200, 225); margin-bottom: 1px; }
+.log-ability { color: rgb(195, 105, 255); }
+.log-injury  { color: rgb(255, 145, 50); }
+.log-kill    { color: rgb(255, 60, 60); }
+
+/* ── Game over ───────────────────────────────────────────────── */
+.game-over-panel {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.78);
+    align-items: center;
+    justify-content: center;
+}
+.panel-hidden { display: none; }
+
+.game-over-text {
+    font-size: 46px;
+    -unity-font-style: bold;
+    color: rgb(255, 215, 50);
+    margin-bottom: 24px;
+    -unity-text-align: middle-center;
+}
+
+.restart-btn {
+    padding: 10px 36px;
+    font-size: 16px;
+    background-color: rgb(40, 95, 40);
+    color: rgb(200, 255, 200);
+    border-color: rgb(70, 155, 70);
+    border-radius: 6px;
+}
+.restart-btn:hover { background-color: rgb(55, 125, 55); }
