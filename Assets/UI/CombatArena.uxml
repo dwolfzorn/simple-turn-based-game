@@ -1,0 +1,49 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Style src="project://database/Assets/UI/CombatArena.uss" />
+    <ui:VisualElement name="root" class="root">
+
+        <!-- Header -->
+        <ui:VisualElement class="header">
+            <ui:Label text="Combat Arena" class="title" />
+            <ui:Label name="round-label" text="Round 1" class="round-label" />
+            <ui:VisualElement name="turn-order-container" class="turn-order" />
+        </ui:VisualElement>
+
+        <!-- Teams row -->
+        <ui:VisualElement class="teams-row">
+            <ui:VisualElement class="team-section">
+                <ui:Label text="Player Team" class="team-title team-title-player" />
+                <ui:VisualElement name="player-cards" class="cards-container" />
+            </ui:VisualElement>
+            <ui:VisualElement class="team-section">
+                <ui:Label text="Enemy Team" class="team-title team-title-enemy" />
+                <ui:VisualElement name="enemy-cards" class="cards-container" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Action panel -->
+        <ui:VisualElement class="action-panel">
+            <ui:Label name="current-turn-label" text="Your Turn" class="turn-label" />
+            <ui:VisualElement class="action-buttons">
+                <ui:Button name="btn-basic"    class="action-btn" text="Basic Attack" />
+                <ui:Button name="btn-targeted" class="action-btn" text="Targeted Attack" />
+                <ui:Button name="btn-ability"  class="action-btn" text="Class Ability" />
+                <ui:Button name="btn-endturn"  class="action-btn btn-endturn" text="End Turn" />
+            </ui:VisualElement>
+            <ui:Label name="selection-prompt" text="" class="selection-prompt" />
+        </ui:VisualElement>
+
+        <!-- Combat log -->
+        <ui:VisualElement class="log-section">
+            <ui:Label text="Combat Log" class="log-title" />
+            <ui:VisualElement name="combat-log" class="combat-log" />
+        </ui:VisualElement>
+
+        <!-- Game over overlay -->
+        <ui:VisualElement name="game-over-panel" class="game-over-panel panel-hidden">
+            <ui:Label name="game-over-text" text="VICTORY!" class="game-over-text" />
+            <ui:Button name="btn-restart" text="Start Over" class="restart-btn" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
