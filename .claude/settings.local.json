@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__unityMCP__manage_editor",
+      "mcp__unityMCP__manage_scene",
+      "mcp__unityMCP__manage_ui",
+      "mcp__unityMCP__create_script",
+      "mcp__unityMCP__refresh_unity",
+      "mcp__unityMCP__read_console",
+      "mcp__unityMCP__execute_menu_item",
+      "Read(//e/repos/**)",
+      "Read(//c/Users/David/**)",
+      "Read(//e/Unity/Projects/My first project/Assets/**)",
+      "Read(//e/Unity/Projects/My first project/Assets/Scripts/**)",
+      "mcp__unityMCP__manage_camera"
+    ]
+  }
+}

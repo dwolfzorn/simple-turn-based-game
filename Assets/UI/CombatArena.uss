@@ -86,11 +86,12 @@
 .team-title-player { background-color: rgb(24, 50, 100); color: rgb(130, 190, 255); }
 .team-title-enemy  { background-color: rgb(100, 24, 24);  color: rgb(255, 130, 130); }
 
-.cards-container { flex-direction: row; flex-wrap: wrap; }
+.cards-container { flex-direction: row; }
 
 /* ── Character card ──────────────────────────────────────────── */
 .char-card {
-    width: 47%;
+    flex: 1;
+    min-width: 0;
     margin: 2px;
     padding: 6px;
     border-radius: 4px;
